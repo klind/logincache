@@ -37,7 +37,7 @@ public class LoginServiceImpl implements LoginService {
                 // User is not in the cache, lets check the database.
                 lastLoginForUser = fakeDBAccess.getLastLoginForUser(userId);
                 if (lastLoginForUser != null) {
-                    loginCache.addToCache(userId, lastLoginForUser);
+                    loginCache.put(userId, lastLoginForUser);
                 }
             }
             return lastLoginForUser != null ? lastLoginForUser.isAfter(LocalDateTime.now().minusHours(24)) : false;
@@ -56,7 +56,7 @@ public class LoginServiceImpl implements LoginService {
                 final LocalDateTime now = LocalDateTime.now();
                 // I assume that every time a user is logging in we need to update the DB also.
                 fakeDBAccess.setLastLoginForUser(userId, now);
-                loginCache.addToCache(userId, now);
+                loginCache.put(userId, now);
             }
         }
     }
@@ -67,7 +67,7 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public final int getCacheSize() {
-        return loginCache.getCacheSize();
+        return loginCache.size();
     }
 
     /**
@@ -80,6 +80,6 @@ public class LoginServiceImpl implements LoginService {
         if (StringUtils.isEmpty(userId)) {
             return false;
         }
-        return loginCache.isUserInCache(userId);
+        return loginCache.containsKey(userId);
     }
 }

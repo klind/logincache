@@ -13,4 +13,5 @@
     <suppress checks="DesignForExtension" files="SwaggerConfig"/>
     <suppress checks="JavadocStyle" files="package-info.java"/>
     <suppress checks="HideUtilityClassConstructor" files="LoginCacheApplication"/>
+    <suppress checks="." files="LoginCache"/>
 </suppressions>

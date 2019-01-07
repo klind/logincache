@@ -58,11 +58,10 @@ Discuss why the cache will be more effective under some scenarios and less effec
 
 If you have questions please feel free to ask them.
 
-
 # Solution
 ### Setup
 The application is develop with Spring Boot.   
-When building and compiling make sure there is access to maven repository.   
+When building and compiling, make sure there is access to maven repository.   
 To run the application execute the class
 **com.code.logincache.LoginCacheApplication**  
 This will start up the application in an embedded Tomcat server.   
@@ -73,7 +72,7 @@ Here you can test the application.
 **Swagger URL : http://localhost:8080/swagger-ui.html**   
 
 #### Checkstyle:
-I also added checkstyle using the default configuration, with a few suppression's
+I also added checkstyle using the default configuration, with a few suppressions
 that can bee seen in checkstyle-suppressions.xml  
 Run "mvn clean verify site", open the file /target/site/checkstyle.html to see
 the result. 
@@ -84,15 +83,10 @@ Execute the class
 
 
 ### Implementation
-I created my own implementation of the cache  
+I used a LinkedHasMap for the cache, but I did extend it so I can override removeEldestEntry  
 **com.code.logincache.LoginCache**  
-I am using a HashMap for the cache, and a LinkedList to keep track on what 
-users are the oldest added to the cache.   
-This gives a convenient way of removing the oldest object from the cache
-when the cache needs to be reduced.  
-If we did not need to keep track on what users where the 'oldest' in the cache, 
-and could just reduce the cache when it was reaching a certain limit, an 
-implementation using the ConcurrentHashMap from the JDK would have been sufficient. 
+As the LinkedHasMap is not thread save, I added synchronized whenever the cache is updated. 
+**com.code.logincache.LoginServiceImpl**
 
 ### Keeping the cache stale.  
 To keep the cache stale (current) with the database, I implemented the logic 
@@ -104,7 +98,7 @@ the database, I did not implement logic for keeping the cache updated
 when users potentially are removed from the database. 
 If this was needed, I would have implemented a scheduled task that would 
 e.g. clear the cache every hour, or we would implements a schedule job that will 
-remove all id's from the cache that no longer are in the database.      
+remove all id's from the cache that no longer are in the database.   
  
 ### Why using a cache?
 We want to limit the number of database calls as they are heavy and 
@@ -113,7 +107,7 @@ better user experience.
 A database might even be sitting in another city, or even country, which would 
 make it really heavy to query ever time we need a check. 
 
-### Cache performance.  
+### Cache performace.  
 As mentioned above the performance is significantly better when using an in
 memory cache.  
 The cache will especially give better performance with many calls to the service. 
