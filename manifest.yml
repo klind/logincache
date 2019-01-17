@@ -1,0 +1,7 @@
+---
+applications:
+  - name: logincache
+    buildpacks: 
+    - java_buildpack
+    path: target/logincache-0.0.1-SNAPSHOT.jar
+    memory: 1024M
