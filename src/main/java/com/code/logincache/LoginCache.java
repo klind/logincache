@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class LoginCache {
     // Use HashMap even though it is not thread safe as ConcurrentHashMap or HashTable.
     // In this case I synchronize on LoginCache itself, as we are also using a queue.
     // If no queue was used, I would have used ConcurrentHashMap
-    private static Map<String, LocalDateTime> cache = new HashMap<>(MAX_CACHE);
+    private static Map<String, LocalDateTime> cache = HashMap.newHashMap(MAX_CACHE);
 
     /**
      * Adds the specified user id with the specified time to the cache. If the cache has reached its max size, the oldest entry will be removed.
@@ -35,7 +36,7 @@ public class LoginCache {
      * @param now    current time.
      */
     public final void addToCache(final String userId, final LocalDateTime now) {
-        if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(now)) {
+        if (!StringUtils.hasLength(userId) || Objects.isNull(now)) {
             LOGGER.warn("Cannot add empty/null user id or null login time to the cache");
             return;
         }
