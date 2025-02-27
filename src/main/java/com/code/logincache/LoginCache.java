@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class LoginCache {
      * @param now    current time.
      */
     public final void addToCache(final String userId, final LocalDateTime now) {
-        if (StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(now)) {
             LOGGER.warn("Cannot add empty/null user id or null login time to the cache");
             return;
         }
