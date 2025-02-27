@@ -24,6 +24,10 @@
 /nbdist/
 /.nb-gradle/
 
+
+### Visual Studio Code ###
+.vscode/
+
 bin
 .README.md.html
 /logs

@@ -1,35 +1,33 @@
 package com.code.logincache;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import com.code.logincache.LoginService;
-
-@RunWith(SpringRunner.class)
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.junit.jupiter.api.Assertions.*;
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class LoginCacheApplicationTest {
+class LoginCacheApplicationTest {
 
     @Autowired
     private LoginService loginService;
 
     @Test
-    public void loginTest() {
+    void loginTest() {
 
         // New entry will not be added to the cache as 1234 is not in the database.
-        Assert.assertFalse(loginService.hasUserLoggedInWithin24("1234"));
+        assertFalse(loginService.hasUserLoggedInWithin24("1234"));
 
         // New entry will be added to the cache.
         loginService.hasUserLoggedInWithin24("1235");
-        Assert.assertEquals(1, loginService.getCacheSize());
+        assertEquals(1, loginService.getCacheSize());
         // Check that 1235 was added to the cache.
-        Assert.assertTrue(loginService.isUserInCache("1235"));
+        assertTrue(loginService.isUserInCache("1235"));
 
         // New entry will be added to the cache.
         loginService.hasUserLoggedInWithin24("1236");
-        Assert.assertEquals(2, loginService.getCacheSize());
+        assertEquals(2, loginService.getCacheSize());
 
         // Add more entries to fill up the cache to its max
         loginService.hasUserLoggedInWithin24("1237");
@@ -40,28 +38,28 @@ public class LoginCacheApplicationTest {
         loginService.hasUserLoggedInWithin24("1242");
         loginService.hasUserLoggedInWithin24("1243");
         loginService.hasUserLoggedInWithin24("1244");
-        Assert.assertEquals(10, loginService.getCacheSize());
+        assertEquals(10, loginService.getCacheSize());
 
         // Add one more entry to go beyond the max cache size.
         // Entry 1235 should now be removed from the cache and 1245 added
         loginService.hasUserLoggedInWithin24("1245");
-        Assert.assertFalse(loginService.isUserInCache("1235"));
-        Assert.assertEquals(10, loginService.getCacheSize());
+        assertFalse(loginService.isUserInCache("1235"));
+        assertEquals(10, loginService.getCacheSize());
 
         // Add one more entry to go beyond the max cache size.
         // Entry 1236 should now be removed from the cache and 1246 added
         loginService.hasUserLoggedInWithin24("1246");
-        Assert.assertFalse(loginService.isUserInCache("1236"));
-        Assert.assertEquals(10, loginService.getCacheSize());
+        assertFalse(loginService.isUserInCache("1236"));
+        assertEquals(10, loginService.getCacheSize());
 
         // Check userJustLoggedIn will add new entry
         loginService.userJustLoggedIn("1247");
-        Assert.assertTrue(loginService.isUserInCache("1247"));
-        Assert.assertEquals(10, loginService.getCacheSize());
+        assertTrue(loginService.isUserInCache("1247"));
+        assertEquals(10, loginService.getCacheSize());
 
         // Check that userJustLoggedIn is not adding again
         loginService.userJustLoggedIn("1247");
-        Assert.assertEquals(10, loginService.getCacheSize());
+        assertEquals(10, loginService.getCacheSize());
 
     }
 

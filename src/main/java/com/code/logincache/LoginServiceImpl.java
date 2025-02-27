@@ -12,11 +12,14 @@ import java.time.LocalDateTime;
 @Component
 public class LoginServiceImpl implements LoginService {
 
-    @Autowired
-    private FakeDBAccess fakeDBAccess;
+    private final FakeDBAccess fakeDBAccess;
+    private final LoginCache loginCache;
 
     @Autowired
-    private LoginCache loginCache;
+    public LoginServiceImpl(FakeDBAccess fakeDBAccess, LoginCache loginCache) {
+        this.fakeDBAccess = fakeDBAccess;
+        this.loginCache = loginCache;
+    }
 
     /**
      * Checks whether the user has logged in within the last 24 hours.
@@ -28,7 +31,7 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public final boolean hasUserLoggedInWithin24(final String userId) {
-        if (StringUtils.isEmpty(userId)) {
+        if (!StringUtils.hasLength(userId)) {
             return false;
         }
         synchronized (loginCache) {
@@ -40,7 +43,7 @@ public class LoginServiceImpl implements LoginService {
                     loginCache.addToCache(userId, lastLoginForUser);
                 }
             }
-            return lastLoginForUser != null ? lastLoginForUser.isAfter(LocalDateTime.now().minusHours(24)) : false;
+            return lastLoginForUser != null && lastLoginForUser.isAfter(LocalDateTime.now().minusHours(24));
         }
     }
 
@@ -51,7 +54,7 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public final void userJustLoggedIn(final String userId) {
-        if (!StringUtils.isEmpty(userId)) {
+        if (StringUtils.hasLength(userId)) {
             synchronized (loginCache) {
                 final LocalDateTime now = LocalDateTime.now();
                 // I assume that every time a user is logging in we need to update the DB also.
@@ -77,7 +80,7 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public final boolean isUserInCache(final String userId) {
-        if (StringUtils.isEmpty(userId)) {
+        if (!StringUtils.hasLength(userId)) {
             return false;
         }
         return loginCache.isUserInCache(userId);
